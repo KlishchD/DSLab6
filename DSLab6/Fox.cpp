@@ -63,6 +63,11 @@ int main(int argc, char** argv) {
     if (n % np != 0) {         
         MPI_Finalize();
         fprintf(stderr, "Square Root of Processes does not divide Number of elements.\n");
+
+		delete[] a;
+		delete[] b;
+		delete[] matrix;
+
         return 0;
     }
 
@@ -224,6 +229,19 @@ int main(int argc, char** argv) {
             MPI_Send(&greeting, 1, MPI_INT, my_rank + 1, tag, MPI_COMM_WORLD);
         }
     }
+
+
+	delete[] a;
+	delete[] b;
+	delete[] matrix;
+
+    delete[] rank_a;
+	delete[] rank_b;
+	delete[] local_a;
+	delete[] local_b;
+
+    delete[] result;
+    delete[] source;
 
     MPI_Finalize();
 
