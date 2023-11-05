@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <mpi.h>
-#include <time.h>
-#include <math.h>
+#include "header.h"
 
-#define MATRIXSIZE 100
+#if ALGORITHM == FOX_ALGORITHM
 
 void printarr(float* arr, int n) {
     fprintf(stdout, "\n");
@@ -25,7 +21,7 @@ void printarr(float* arr, int n) {
 int main(int argc, char** argv) {
     int comm_sz;        
     int my_rank;        
-    int n = MATRIXSIZE; 
+    int n = MATRIX_SIZE;
     int master = 0;     
     int tag = 0;        
     float* a = new float[n * n];     
@@ -117,7 +113,7 @@ int main(int argc, char** argv) {
     if (my_rank == 0) {
         printf("Matrix");
         printarr(matrix, n);    
-		printf("B");
+        printf("B");
         printarr(b, n);
     }
 
@@ -213,23 +209,20 @@ int main(int argc, char** argv) {
         fprintf(stdout, "Total Time Elapsed is %.10f seconds\n", final_time);
     }
 
-    if (1) {
-        int greeting = 1;
-        if (my_rank == master) {
-            printarr(result, nr);
-            MPI_Send(&greeting, 1, MPI_INT, my_rank + 1, tag, MPI_COMM_WORLD);
-        }
-        else if (my_rank == comm_sz - 1) {
-            MPI_Recv(&greeting, 1, MPI_INT, my_rank - 1, tag, MPI_COMM_WORLD, &status);
-            printarr(result, nr);
-        }
-        else {
-            MPI_Recv(&greeting, 1, MPI_INT, my_rank - 1, tag, MPI_COMM_WORLD, &status);
-            printarr(result, nr);
-            MPI_Send(&greeting, 1, MPI_INT, my_rank + 1, tag, MPI_COMM_WORLD);
-        }
+    int greeting = 1;
+    if (my_rank == master) {
+        printarr(result, nr);
+        MPI_Send(&greeting, 1, MPI_INT, my_rank + 1, tag, MPI_COMM_WORLD);
     }
-
+    else if (my_rank == comm_sz - 1) {
+        MPI_Recv(&greeting, 1, MPI_INT, my_rank - 1, tag, MPI_COMM_WORLD, &status);
+        printarr(result, nr);
+    }
+    else {
+        MPI_Recv(&greeting, 1, MPI_INT, my_rank - 1, tag, MPI_COMM_WORLD, &status);
+        printarr(result, nr);
+        MPI_Send(&greeting, 1, MPI_INT, my_rank + 1, tag, MPI_COMM_WORLD);
+    }
 
 	delete[] a;
 	delete[] b;
@@ -247,3 +240,5 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
+#endif 
